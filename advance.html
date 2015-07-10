@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>jQuery Callbacks</title>
+  <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link href="//cdn.bootcss.com/highlight.js/8.6/styles/monokai_sublime.min.css" rel="stylesheet">
+  <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+  <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//cdn.bootcss.com/highlight.js/8.6/highlight.min.js"></script>
+  <script src="//cdn.bootcss.com/highlight.js/8.6/languages/javascript.min.js"></script>
+  <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+  <div class="navbar navbar-reverse">
+    <a class="navbar-brand" href="#">jQuery Callbacks</a>
+    <ul class="nav navbar-nav">
+      <li class="active">
+        <a href="/">简单示例</a>
+      </li>
+      <li>
+        <a href="/advance.html">进阶,实现订阅/发布</a>
+      </li>
+    </ul>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <pre>
+          <code>
+            + function() {
+              var topics = {};
+              $.Topic = function(id) {
+                var callbacks,
+                  topic = id && topics[id];
+
+                if (!topic) {
+                  callbacks = $.Callbacks();
+                  topic = {
+                    subscribe: callbacks.add,
+                    publish: callbacks.fire,
+                    unsubscribe: callbacks.remove
+                  };
+                  topics[id] = topic;
+                }
+                if (id) {
+                  topics[id] = topic;
+                }
+                return topic;
+              }
+
+              function showMessage(msg) {
+                console.log('the logic to show message:' + msg + 'to end user');
+              }
+
+              function addMessageItem(msg) {
+                console.log('add this message: ' + msg + ' to message list view')
+              }
+
+              $.Topic('messageArrived').subscribe( showMessage );
+              $.Topic('messageArrived').subscribe( addMessageItem );
+              console.log('after 1s, we will recive the message');
+              console.log('');
+              setTimeout(function() {
+                $.Topic('messageArrived').publish('the message from ET');
+              }, 1e3);
+            }();
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    + function() {
+      var topics = {};
+      $.Topic = function(id) {
+        var callbacks,
+          topic = id && topics[id];
+
+        if (!topic) {
+          callbacks = $.Callbacks();
+          topic = {
+            subscribe: callbacks.add,
+            publish: callbacks.fire,
+            unsubscribe: callbacks.remove
+          };
+          topics[id] = topic;
+        }
+        if (id) {
+          topics[id] = topic;
+        }
+        return topic;
+      }
+    }();
+
+    function showMessage(msg) {
+      console.log('the logic to show message:' + msg + 'to end user');
+    }
+
+    function addMessageItem(msg) {
+      console.log('add this message: ' + msg + ' to message list view')
+    }
+
+    $.Topic('messageArrived').subscribe( showMessage );
+    $.Topic('messageArrived').subscribe( addMessageItem );
+    console.log('after 1s, we will recive the message');
+    console.log('');
+    setTimeout(function() {
+      $.Topic('messageArrived').publish('the message from ET');
+    }, 1e3);
+  </script>
+  <script type="text/javascript">
+  $.Topic('ajax_request').subscribe(showMessage);
+
+  var dtd = $.Deferred();
+
+  var subscriber = $.Topic('ajax_request');
+
+  dtd.done(subscriber.publish);
+  console.log('after 2s, we will get the data');
+  console.log('');
+  setTimeout(function() {
+    dtd.resolve('I had geted the data from server');
+  }, 2e3);
+  </script>
+</body>
+</html>
